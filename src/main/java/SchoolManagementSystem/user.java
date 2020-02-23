@@ -5,6 +5,13 @@
  */
 package SchoolManagementSystem;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 /**
  *
  * @author User
@@ -16,6 +23,20 @@ public class user extends javax.swing.JFrame {
      */
     public user() {
         initComponents();
+        Connect();
+    }
+    Connection con;
+    PreparedStatement pst;
+    
+    public void Connect(){
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mariadb://localhost/school_management_system","root","");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(user.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(user.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -158,6 +179,11 @@ public class user extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Save");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Edit");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -245,6 +271,40 @@ public class user extends javax.swing.JFrame {
     private void txtAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAddressActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAddressActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            
+            String name = txtName.getText();
+            String phone = txtPhone.getText();
+            String address = txtAddress.getText();
+            String username = txtUsername.getText();
+            String password = txtPassword.getText();
+            String usertype = txtUsertype.getSelectedItem().toString();
+            pst = con.prepareStatement("insert into user(name,phone,address,username,password,usertype)values(?,?,?,?,?,?)");
+            pst.setString(1, name);
+            pst.setString(2, phone);
+            pst.setString(3, address);
+            pst.setString(4, username);
+            pst.setString(5, password);
+            pst.setString(6, usertype);
+            
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "User Added Successfully");
+            
+            txtName.setText("");
+            txtPhone.setText("");
+            txtAddress.setText("");
+            txtUsername.setText("");
+            txtPassword.setText("");
+            txtUsertype.setSelectedIndex(-1);
+            txtName.requestFocus();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(user.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
